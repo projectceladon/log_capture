@@ -1,0 +1,8 @@
+Add a prebuilt static liblog.a for this project, this is because below 3 functions are not accessiable when enabling VNDK with the flag "BOARD_VNDK_VERSION:=current".
+
+android_openEventTagMap
+android_log_processBinaryLogBuffer
+android_log_processLogBuffer
+
+
+This is only workaound, the right way is NOT using this functions

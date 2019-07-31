@@ -1,0 +1,9 @@
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := liblog-log_capture
+LOCAL_MODULE_CLASS := STATIC_LIBRARIES
+LOCAL_SRC_FILES := liblog.a
+LOCAL_MODULE_SUFFIX := .a
+LOCAL_PROPRIETARY_MODULE := true
+include $(BUILD_PREBUILT)
