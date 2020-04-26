@@ -24,11 +24,17 @@ APLOG_FILE_PATH=/data/logs/aplogs/aplog.
 LOGCAT_FILE_PATH=/data/misc/logd/logcat.
 LINK_TOOL=/vendor/bin/ln
 VENDOR_PRINTF=/vendor/bin/printf
-APLOG_LIMIT=$(( $( /vendor/bin/getprop persist.logd.logpersistd.count ) +1 ))
-APLOG_BIT=$(( $APLOG_LIMIT / 10 ))
+APLOG_COUNT=$(/vendor/bin/getprop persist.logd.logpersistd.size)
+APLOG_LIMIT=$((APLOG_COUNT+1))
+APLOG_BIT=0
 start_link() {
-	NUM=256
 	i=0
+
+	while [ $APLOG_COUNT -gt 0 ]
+	do
+		APLOG_BIT=$((APLOG_BIT+1))
+		APLOG_COUNT=$((APLOG_COUNT/10))
+	done
 
 	while [ ! -e "/data/misc/logd/logcat" ]
 	do
@@ -37,7 +43,7 @@ start_link() {
 	[ -h /data/logs/aplogs/aplog ] || $LINK_TOOL -s /data/misc/logd/logcat /data/logs/aplogs/aplog
 	while true
 	do
-		i=$(($i+1))
+		i=$((i+1))
 		N=$($VENDOR_PRINTF "%0"$APLOG_BIT"d" $i)
 		echo "vendor.aplog: create aplog.$N"
 		[ $i -eq $APLOG_LIMIT ] && exit 0
@@ -49,7 +55,7 @@ start_link() {
 			fi
 		else
 			sleep 3
-			i=$(($i-1))
+			i=$((i-1))
 			continue
 		fi
 	done
