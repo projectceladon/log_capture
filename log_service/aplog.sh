@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-# This script is used to link /data/misc/logd/logcat.xxx to /data/logs/aplog.xxx
+# This script is used to link /data/misc/logd/logcat.xxx to /data/vendor/logs/aplog.xxx
 # to persistently save android aplication log and kernel log.
 
-APLOG_FILE_PATH=/data/logs/aplogs/aplog.
+APLOG_FILE_PATH=/data/vendor/logs/aplogs/aplog.
 LOGCAT_FILE_PATH=/data/misc/logd/logcat.
 LINK_TOOL=/vendor/bin/ln
 VENDOR_PRINTF=/vendor/bin/printf
@@ -40,7 +40,7 @@ start_link() {
 	do
 		sleep 1
 	done
-	[ -h /data/logs/aplogs/aplog ] || $LINK_TOOL -s /data/misc/logd/logcat /data/logs/aplogs/aplog
+	[ -h /data/vendor/logs/aplogs/aplog ] || $LINK_TOOL -s /data/misc/logd/logcat /data/vendor/logs/aplogs/aplog
 	while true
 	do
 		i=$((i+1))

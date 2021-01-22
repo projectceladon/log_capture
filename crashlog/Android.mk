@@ -57,7 +57,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 include $(LOCAL_PATH)/intel_specific/specific.mk
 
 # Options
-CRASHLOGD_LOGS_PATH := "/data/logs"
+CRASHLOGD_LOGS_PATH := "/data/vendor/logs"
 
 ifeq ($(MIXIN_DEBUG_LOGS),true)
 LOCAL_CFLAGS += -DFULL_REPORT -DCONFIG_APLOG -DCONFIG_USE_SD=FALSE \

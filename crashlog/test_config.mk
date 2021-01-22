@@ -23,7 +23,7 @@
 # CRASHLOGD_COREDUMP := true
 # CRASHLOGD_EFILINUX := true
 # CRASHLOGD_FDK := true
-# CRASHLOGD_LOGS_PATH := "/data/logs"
+# CRASHLOGD_LOGS_PATH := "/data/vendor/logs"
 
 # Modules
 
