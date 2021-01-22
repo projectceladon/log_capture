@@ -17,7 +17,7 @@
 /**
  * @file last_vmm_log.c
  * @brief File containing functions used to save the last vmm log.
- * Save the last vmm log to file /data/logs/last_vmm_log.
+ * Save the last vmm log to file /data/vendor/logs/last_vmm_log.
  */
 
 #include "fsutils.h"
