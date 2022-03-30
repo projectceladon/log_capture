@@ -49,7 +49,7 @@ static int nextline = -1;
 static unsigned int fileentries = 0;
 static int loop_uptime_event = 1;
 /* last uptime value set at device boot only */
-static char lastbootuptime[24] = "0000:00:00";
+static char lastbootuptime[25] = "0000:00:00";
 static char lastfakeprop[PROPERTY_VALUE_MAX] = "";
 extern int gabortcleansd;
 // global variable to enable dynamic change of uptime frequency
