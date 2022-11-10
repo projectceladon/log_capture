@@ -61,6 +61,7 @@ start_link() {
 	done
 }
 
+/vendor/bin/docker_manager&
 
 start_link
 exit 0
