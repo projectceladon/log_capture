@@ -88,10 +88,12 @@ static inline int dir_exists(const char *dirpath) {
     DIR * dir;
 
     dir = opendir(dirpath);
-    if (dir != NULL)
+    if (dir != NULL) {
+        closedir(dir);
         return 1;
-    else
+    } else {
         return 0;
+    }
 }
 
 static inline int get_file_size(char *filename) {

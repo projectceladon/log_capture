@@ -61,7 +61,13 @@ static int check_aplogs_tobackup(char *filename) {
             /* allocated memory is freed in commachain_to_fixedarray */
             return 0;
         }
-        if ( nbpatterns == 0 || !patterns_array_32 ) return 0;
+        if (nbpatterns == 0) {
+            if (patterns_array_32) {
+                free(patterns_array_32);
+            }
+            return 0;
+        }
+        if (!patterns_array_32) return 0;
         //pattern 64 bit is a copy of pattern 32 before transformation
         patterns_array_64 = (char**)malloc(nbrecords*sizeof(char*));
         if (!patterns_array_64) {

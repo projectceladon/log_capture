@@ -104,7 +104,8 @@ static int get_timed_firstline(char *buffer, int *hours, char lastuptime[24], in
     if (snprintf(buffer, MAXLINESIZE, HISTORY_FIRST_LINE_FMT, lastuptime) > 0) {
         /* save to static variables for next call without refreshing */
         saved_hours = *hours;
-        strncpy(saved_lastuptime, lastuptime, sizeof(saved_lastuptime));
+        strncpy(saved_lastuptime, lastuptime, sizeof(saved_lastuptime)-1);
+        saved_lastuptime[sizeof(saved_lastuptime)-1] = '\0';
         return 0;
     }
     else {
@@ -327,7 +328,8 @@ int uptime_history() {
             HISTORY_FILE, strerror(errno));
         return -res;
     }
-    fscanf(to, "#V1.0 %16s%24s\n", name, lastbootuptime);
+    res = fscanf(to, "#V1.0 %16s%24s\n", name, lastbootuptime);
+    if (res == EOF) return -errno;
     fclose(to);
     if (memcmp(name, "CURRENTUPTIME", sizeof("CURRENTUPTIME"))) {
         LOGE("%s: Bad first line; cannot continue\n",
@@ -511,6 +513,9 @@ int update_history_on_cmd_delete(char *events) {
         LOGE("%s: Not patterns found in %s... stop the operation\n",
             __FUNCTION__, events);
         fclose(fd);
+        if (events_list) {
+            free(events_list);
+        }
         return -1;
     }
     /*read each line of history file and check if event id matches one of the list*/

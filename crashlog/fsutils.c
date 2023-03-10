@@ -291,7 +291,7 @@ int count_lines_in_file(const char *filename) {
         return -EINVAL;
 
     fd = open(filename, O_RDONLY);
-    if(fd <= 0) return -errno;
+    if(fd == -1) return -errno;
 
     while(readline(fd, buffer) > 0) {
         line_idx++;
@@ -309,7 +309,7 @@ int find_oneofstrings_in_file(const char *filename, const char *keywords[], int 
         return -EINVAL;
 
     fd = open(filename, O_RDONLY);
-    if(fd <= 0) return -errno;
+    if(fd == -1) return -errno;
 
     while((linesize = readline(fd, buffer)) > 0) {
         /* Remove the trailing '\n' if it's there */
@@ -341,7 +341,7 @@ int find_oneofstrings_in_file_with_keyword(char *filename, char **keywords, char
         return -EINVAL;
 
     fd = open(filename, O_RDONLY);
-    if(fd <= 0)
+    if(fd == -1)
         return -errno;
 
     buffer = &buf1[0];
@@ -387,7 +387,7 @@ int find_str_in_standard_file(char *filename, char *keyword, char *tail) {
     if (keyword == NULL || filename == NULL)
         return -EINVAL;
     fd = open(filename, O_RDONLY);
-    if(fd <= 0)
+    if(fd == -1)
         return -errno;
 
     /* Check the tail length once and for all */
@@ -532,9 +532,11 @@ int get_sdcard_paths(e_dir_mode_t mode) {
     }
 
     errno = 0;
-    if (!file_exists(SDCARD_LOGS_DIR))
-        mkdir(SDCARD_LOGS_DIR, 0777);
-
+    if (!file_exists(SDCARD_LOGS_DIR)) {
+        int ret = mkdir(SDCARD_LOGS_DIR, 0777);
+        if (ret < 0)
+            return -errno;
+    }
     if ( (d = opendir(SDCARD_LOGS_DIR)) != NULL ){
         CRASH_DIR = SDCARD_CRASH_DIR;
         STATS_DIR = SDCARD_STATS_DIR;
@@ -1563,7 +1565,9 @@ int read_file_prop_uid(const char* source, const char *filename, char *uid, char
     strncpy(uid, defaultvalue, PROPERTY_VALUE_MAX);
     fd = fopen(filename, "r");
     if (fd!=NULL){
-        freadline(fd, buffer);
+        int ret = freadline(fd, buffer);
+        if (ret < 0)
+           return -1;
         strncpy(uid, buffer, PROPERTY_VALUE_MAX);
         fclose(fd);
     }

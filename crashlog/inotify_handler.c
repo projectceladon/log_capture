@@ -327,6 +327,11 @@ int receive_inotify_events(int inotify_fd) {
         return -errno;
     }
 
+    if (len < sizeof(orig_buffer))
+        orig_buffer[len] = '\0';
+    else
+        orig_buffer[sizeof(orig_buffer)-1] = '\0';
+
     buffer = &orig_buffer[0];
     orig_len = len;
     event = (struct inotify_event *)buffer;
@@ -445,7 +450,8 @@ int receive_inotify_events(int inotify_fd) {
                         entry = &wd_array[idx];
                 }
                 if ( entry && entry->eventpath ) {
-                    mkdir(entry->eventpath, 0777); /* TO DO : restoring previous rights/owner/group ?*/
+                    int ret = mkdir(entry->eventpath, 0777); /* TO DO : restoring previous rights/owner/group ?*/
+                    if (ret < 0) return -1;
                     inotify_rm_watch(inotify_fd, event->wd);
                     wd = inotify_add_watch(inotify_fd, entry->eventpath, entry->eventmask);
                     if ( wd < 0 ) {

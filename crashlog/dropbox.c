@@ -90,7 +90,8 @@ int start_dumpstate_srv(char* crash_dir, char *key) {
         return -1;
     }
     index_prod = (index_prod + 1) % DIM(gcurrent_key);
-    strncpy(gcurrent_key[index_prod],key,SHA_DIGEST_LENGTH+1);
+    strncpy(gcurrent_key[index_prod],key,SHA_DIGEST_LENGTH);
+    gcurrent_key[index_prod][SHA_DIGEST_LENGTH] = '\0';
     return 1;
 }
 
@@ -132,7 +133,8 @@ int finalize_dropbox_pending_event(const struct inotify_event __attribute__((unu
 
     if (is_crashreport_available()) {
         struct arg_cmd * args_thread =  malloc(sizeof(struct arg_cmd));
-        strncpy(args_thread->key,gcurrent_key[index_cons],sizeof(args_thread->key));
+        strncpy(args_thread->key,gcurrent_key[index_cons],sizeof(args_thread->key)-1);
+        args_thread->key[sizeof(args_thread->key)-1] = '\0';
         ret = pthread_create(&thread, NULL, (void *)finalize_dropbox_system_thread, args_thread);
         if (ret < 0) {
             LOGE("%s: finalize_dropbox thread error", __FUNCTION__);
@@ -247,7 +249,8 @@ int manage_duplicate_dropbox_events(struct inotify_event *event)
      */
     if (event->mask & IN_MOVED_FROM) {
         previous_event_cookie = event->cookie;
-        strncpy(previous_filename, event->name, MIN(event->len, PATHMAX));
+        strncpy(previous_filename, event->name, MIN(event->len, PATHMAX)-1);
+        previous_filename[MIN(event->len, PATHMAX)-1] = '\0';
         return -1;
     }
 
