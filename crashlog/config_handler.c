@@ -279,7 +279,8 @@ void load_config(){
             if (sk_exists(VMMTRAP_CONF_PATTERN, "root_path", &my_conf_handle)) {
                 char *tmp = get_value(VMMTRAP_CONF_PATTERN, "root_path", &my_conf_handle);
                 if (tmp) {
-                    strncpy(vmmtrap_root_path, tmp, sizeof(vmmtrap_root_path));
+                    strncpy(vmmtrap_root_path, tmp, sizeof(vmmtrap_root_path)-1);
+                    vmmtrap_root_path[sizeof(vmmtrap_root_path)-1] = '\0';
                     LOGI("vmmtrap_root_path set to: %s", vmmtrap_root_path);
                 }
             }

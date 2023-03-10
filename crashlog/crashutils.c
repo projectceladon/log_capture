@@ -398,8 +398,9 @@ static int create_minimal_crashfile(char * event, const char* type, const char* 
                 }
                 char value[PATHMAX] = "";
                 if (ismpanic) {
-                    fscanf(fd_panic, "%s", value);
-                    fprintf(fp,"DATA0=%s\n", value);
+                    int ret = fscanf(fd_panic, "%s", value);
+                    if (ret != EOF)
+                        fprintf(fp,"DATA0=%s\n", value);
                 }
                 else { // iscrashdata
                     while (fgets(value,sizeof(value),fd_panic) && !strstr(value,"_END"))
@@ -507,10 +508,13 @@ static int priv_raise_event(char *key, char *event, char *type, char *subtype, c
                 __FUNCTION__, strerror(-res));
             return 0;
         }
+        newuptime[sizeof(newuptime)-1] = '\0';
         break;
     case UPTIME_BOOT :
-        if (!get_lastboot_uptime(lastbootuptime))
+        if (!get_lastboot_uptime(lastbootuptime)) {
             puptime = &lastbootuptime[0];
+            lastbootuptime[sizeof(lastbootuptime)-1] = '\0';
+        }
         break;
     default : /* NO_UPTIME */
         break;
@@ -861,43 +865,43 @@ const char *get_build_footprint() {
     snprintf(footprint, SIZE_FOOTPRINT_MAX, "%s,", gbuildversion);
 
     property_get(FINGERPRINT_FIELD, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(KERNEL_FIELD, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(USER_FIELD, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, "@", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, "@", PROPERTY_VALUE_MAX);
 
     property_get(HOST_FIELD, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     fetch_modem_name(0, &modem_name);
-    strncat(footprint, modem_name, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, modem_name, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(IFWI_FIELD, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(IAFW_VERSION, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(SCUFW_VERSION, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(PUNIT_VERSION, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
-    strncat(footprint, ",", SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
+    strncat(footprint, ",", PROPERTY_VALUE_MAX);
 
     property_get(VALHOOKS_VERSION, prop, "");
-    strncat(footprint, prop, SIZE_FOOTPRINT_MAX);
+    strncat(footprint, prop, PROPERTY_VALUE_MAX);
     return footprint;
 }
 
@@ -1401,6 +1405,7 @@ int get_cmdline_bootreason(char *bootreason) {
     if (!cmdline) {
         LOGE("%s: failed to allocate memory to read %s\n", __FUNCTION__,
              CURRENT_KERNEL_CMDLINE);
+        fclose(fd);
         return -1;
     }
 
@@ -1412,7 +1417,7 @@ int get_cmdline_bootreason(char *bootreason) {
         free(cmdline);
         return -1;
     }
-
+    cmdline[len-1] = '\0';
     p = strstr(cmdline, key);
     if (!p) {
         free(cmdline);
