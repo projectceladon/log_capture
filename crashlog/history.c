@@ -329,8 +329,8 @@ int uptime_history() {
         return -res;
     }
     res = fscanf(to, "#V1.0 %16s%24s\n", name, lastbootuptime);
-    if (res == EOF) return -errno;
     fclose(to);
+    if (res == EOF) return -errno;
     if (memcmp(name, "CURRENTUPTIME", sizeof("CURRENTUPTIME"))) {
         LOGE("%s: Bad first line; cannot continue\n",
             __FUNCTION__);
