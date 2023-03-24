@@ -194,7 +194,7 @@ static int check_package_presence(const char *package) {
     prev_stderr = dup(STDERR_FILENO);
 
     if ( prev_stdout < 0 || prev_stderr < 0 )
-        return -1;
+        goto failed;
 
     dup2(out_pipe[1], STDOUT_FILENO);
     dup2(out_pipe[1], STDERR_FILENO);
@@ -203,11 +203,11 @@ static int check_package_presence(const char *package) {
     //need to add O_NONBLOCK, otherwise it will hang if nothing is output on stdout/stderr
     int fattr = fcntl(out_pipe[0], F_GETFL);
     if (fattr < 0)
-        return -1;
+        goto failed;
     
     status = fcntl(out_pipe[0], F_SETFL, fattr | O_NONBLOCK);
     if (status < 0)
-        return -1;
+        goto failed;
 
     snprintf(command, PATHMAX, "pm list packages -f %s", package);
     status = run_command(command, 15);
@@ -230,6 +230,11 @@ static int check_package_presence(const char *package) {
         return -1;
 
     return 0;
+
+failed:
+    if (prev_stdout >= 0) close(prev_stdout);
+    if (prev_stderr >= 0) close(prev_stderr);
+    return -1;
 }
 
 int is_crashreport_available() {

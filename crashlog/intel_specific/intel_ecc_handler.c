@@ -418,8 +418,12 @@ int dump_dmesg(const char *filepath) {
     prev_stdout = dup(STDOUT_FILENO);
     prev_stderr = dup(STDERR_FILENO);
 	
-    if ( prev_stdout < 0 || prev_stderr < 0 )
+    if ( prev_stdout < 0 || prev_stderr < 0 ) {
+        fclose(fd);
+        if (prev_stdout >= 0) close(prev_stdout);
+        if (prev_stderr >= 0) close(prev_stderr);
         return -errno;
+    }
 
     dup2(fileno(fd), STDOUT_FILENO);
     dup2(fileno(fd), STDERR_FILENO);
