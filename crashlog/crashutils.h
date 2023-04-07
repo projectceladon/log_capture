@@ -104,6 +104,4 @@ int process_info_and_error_inotify_callback(struct watch_entry *entry, struct in
 int process_info_and_error(char *filename, char *name);
 int notify_partition_error(enum partition_error type);
 
-int get_cmdline_bootreason(char *bootreason);
-
 #endif /* __CRASHUTILS_H__ */
