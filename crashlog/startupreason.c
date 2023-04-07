@@ -311,7 +311,8 @@ static void get_default_bootreason(char *bootreason) {
     unsigned int i;
     char bootreason_prop[PROPERTY_VALUE_MAX];
 
-    ret = get_cmdline_bootreason(bootreason_prop);
+    // Use property_get to get boot reason starting from Android 12
+    ret = property_get(PROP_BOOTREASON, bootreason_prop, "");
     if (ret <= 0)
         return;
 
