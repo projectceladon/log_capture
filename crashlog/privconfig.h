@@ -304,7 +304,7 @@ extern enum crashlog_mode g_crashlog_mode;
 #define PROP_CRASH_MODE         "persist.vendor.sys.crashlogd.mode"
 #define PROP_PROFILE            "persist.vendor.service.profile.enable"
 #define PROP_PROC_ONGOING       "crashlogd.vendor.processing.ongoing"
-#define PROP_BOOTREASON         "ro.boot.bootreason"
+#define PROP_BOOTREASON         "sys.boot.reason"
 #define PROP_BOOT_STATUS        "sys.boot_completed"
 #define PROP_BUILD_FIELD        "ro.build.version.incremental"
 #define PROP_BOARD_FIELD        "ro.product.model"
