@@ -217,7 +217,8 @@ int crashlog_check_dontpanic(char *reason) {
     char crashtype[32] = {'\0'};
     char *key;
 
-    ret = get_cmdline_bootreason(bootreason);
+    // Use property_get to get boot reason starting from Android 12
+    ret = property_get(PROP_BOOTREASON, bootreason, "");
     if (ret < 0) {
         LOGE("%s: failed to get bootreason\n", __FUNCTION__);
         return -1;
