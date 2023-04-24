@@ -76,10 +76,16 @@ static int priv_process_usercrash_event(struct watch_entry *entry, struct inotif
     char eventname[PATHMAX];
     char *key;
     char *dir;
+    const char *pb_ext = ".pb";
+
     /* Check for duplicate dropbox event first */
     if ((entry->eventtype == JAVACRASH_TYPE || entry->eventtype == JAVACRASH_TYPE2 || entry->eventtype == JAVATOMBSTONE_TYPE )
             && manage_duplicate_dropbox_events(event) )
         return 1;
+    /* Check if the file is duplicate: ignore .pb file*/
+    if (entry->eventtype == TOMBSTONE_TYPE && strstr(event->name, pb_ext) != NULL) {
+        return 1;
+    }
 
     snprintf(path, sizeof(path),"%s/%s", entry->eventpath, event->name);
     snprintf(eventname, sizeof(eventname),"%s%s", entry->eventname,
