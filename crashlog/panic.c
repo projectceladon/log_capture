@@ -386,7 +386,9 @@ int crashlog_check_ram_panic(char *reason, const char *extrastring) {
     const char *panic_kw[] = {"Kernel panic - not syncing:",
                               "BUG: unable to handle kernel"};
     char crash_ramconsole_name[PATHMAX] = {'\0'};
+    char crash_ramdmesg_name[PATHMAX] = {'\0'};
     char ram_console[PATHMAX] = {'\0'};
+    char ram_dmesg[PATHMAX] = {'\0'};
     char crashtype[32] = {'\0'};
     char *dir;
     int ret;
@@ -404,6 +406,11 @@ int crashlog_check_ram_panic(char *reason, const char *extrastring) {
         // no file found, should return
         return 1;
     }
+
+    if (file_exists(DMESG_RAMOOPS_NUM(0))) {
+        strcpy(ram_dmesg, DMESG_RAMOOPS_NUM(0));
+    }
+
     ret = crashlog_check_ram_panic_found(ram_console, panic_kw, DIM(panic_kw), extrastring);
     if (ret < 0) {
         return -1;
@@ -416,12 +423,13 @@ int crashlog_check_ram_panic(char *reason, const char *extrastring) {
     dir = generate_crashlog_dir(MODE_CRASH, key);
 
     copy_to_crash = (dir != NULL);
-
     if (copy_to_crash) {
         snprintf(crash_ramconsole_name, sizeof(crash_ramconsole_name),
             "%s/%s_%s.txt", dir, CONSOLE_RAMOOPS_FILE, dateshort);
-        // to be homogeneous with do_last_kmsg_copy, we use do_copy_tail
-        do_copy_tail(ram_console, crash_ramconsole_name, MAXFILESIZE);
+        do_copy_eof(ram_console, crash_ramconsole_name);
+        snprintf(crash_ramdmesg_name, sizeof(crash_ramdmesg_name),
+            "%s/%s_%s.txt", dir, DMESG_RAMOOPS_FILE, dateshort);
+        do_copy_eof(ram_dmesg, crash_ramdmesg_name);
     } else {
         LOGE("%s: Cannot get a valid new crash directory...\n", __FUNCTION__);
         // use temp file
