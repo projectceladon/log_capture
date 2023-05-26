@@ -414,7 +414,9 @@ extern enum crashlog_mode g_crashlog_mode;
 #define CONSOLE_NAME            "console"
 #define LAST_KMSG_FILE          "last_kmsg"
 #define CONSOLE_RAMOOPS_FILE    "console-ramoops"
+#define DMESG_RAMOOPS_FILE      "dmesg-ramoops"
 #define CONSOLE_RAMOOPS_FILE_NUM(x) "console-ramoops-"#x""
+#define DMESG_RAMOOPS_FILE_NUM(x) "dmesg-ramoops-"#x""
 #define FTRACE_RAMOOPS_FILE     "ftrace-ramoops"
 #define EMMC_HEADER_NAME        "emmc_ipanic_header"
 #define EMMC_CONSOLE_NAME       "emmc_ipanic_console"
@@ -433,6 +435,7 @@ extern enum crashlog_mode g_crashlog_mode;
 #define LAST_KMSG               PROC_DIR "/" LAST_KMSG_FILE
 #define CONSOLE_RAMOOPS         PSTORE_DIR "/" CONSOLE_RAMOOPS_FILE
 #define CONSOLE_RAMOOPS_NUM(x)  PSTORE_DIR "/" CONSOLE_RAMOOPS_FILE_NUM(x)
+#define DMESG_RAMOOPS_NUM(x)    PSTORE_DIR "/" DMESG_RAMOOPS_FILE_NUM(x)
 #define FTRACE_RAMOOPS          PSTORE_DIR "/" FTRACE_RAMOOPS_FILE
 #define PANIC_HEADER_NAME       PROC_DIR "/" EMMC_HEADER_NAME
 #define PANIC_CONSOLE_NAME      PROC_DIR "/" EMMC_CONSOLE_NAME
