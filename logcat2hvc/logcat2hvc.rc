@@ -1,0 +1,8 @@
+service logcat2hvc /system/bin/logcat2hvc -b all -v threadtime -f /dev/hvc0 *:V
+    group system
+    oneshot
+
+#on property:logd.ready=true
+
+on init
+    start logcat2hvc

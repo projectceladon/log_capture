@@ -1,0 +1,12 @@
+#! /system/bin/sh
+
+# Start logcat then if logcat exits, restart from the most recently
+# logged log, such that duplicates are not sent when restarting.
+
+[ ! -c /dev/hvc0 ] && exit -1
+
+logcat "$@"
+
+while true; do
+    logcat -T1 "$@"
+done
