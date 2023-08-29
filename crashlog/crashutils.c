@@ -161,8 +161,35 @@ unsigned long long get_uptime(int refresh, int *error)
     return time_ns;
 }
 
+// Find system last kmsg from dropbox
+static int find_system_last_kmsg(char source[], int source_length) {
+    struct dirent *entry;
+    DIR *dir = opendir(DROPBOX_DIR);
+    int file_exist = 0;
+
+    if (source == NULL) {
+        LOGE("source is NULL.\n");
+        return file_exist;
+    }
+    if (dir == NULL) {
+        LOGE("No such directory: %s\n",DROPBOX_DIR);
+        return file_exist;
+    }
+    while ((entry = readdir(dir)) != NULL) {
+        if (strstr(entry->d_name, DROPBOX_LAST_KMSG) && sizeof(entry->d_name) < source_length) {
+            if (strncmp(source, entry->d_name, sizeof(entry->d_name)) < 0) {
+                strncpy(source, entry->d_name, sizeof(entry->d_name));
+                file_exist = 1;
+            }
+        }
+    }
+    return file_exist;
+}
+
 void do_last_kmsg_copy(char *dir) {
     char destion[PATHMAX];
+    char source[PATHMAX];
+    char sourcepath[PATHMAX];
 
     if ( file_exists(LAST_KMSG) ) {
         snprintf(destion, sizeof(destion), "%s/%s", dir, LAST_KMSG_FILE);
@@ -177,6 +204,11 @@ void do_last_kmsg_copy(char *dir) {
     if ( file_exists(FTRACE_RAMOOPS) ) {
         snprintf(destion, sizeof(destion), "%s/%s", dir, FTRACE_RAMOOPS_FILE);
         do_copy_tail(FTRACE_RAMOOPS, destion, MAXFILESIZE);
+    }
+    if (find_system_last_kmsg(source, sizeof(source))) {
+        snprintf(destion, sizeof(destion), "%s/%s", dir, source);
+        snprintf(sourcepath, sizeof(sourcepath), "%s/%s", DROPBOX_DIR, source);
+        do_copy_tail(sourcepath, destion, MAXFILESIZE);
     }
 }
 
