@@ -413,6 +413,7 @@ extern enum crashlog_mode g_crashlog_mode;
 #define LOG_FABRICTEMP           LOGS_DIR "/fabric_temp"
 #define CONSOLE_NAME            "console"
 #define LAST_KMSG_FILE          "last_kmsg"
+#define DROPBOX_LAST_KMSG       "SYSTEM_LAST_KMSG"
 #define CONSOLE_RAMOOPS_FILE    "console-ramoops"
 #define DMESG_RAMOOPS_FILE      "dmesg-ramoops"
 #define CONSOLE_RAMOOPS_FILE_NUM(x) "console-ramoops-"#x""
