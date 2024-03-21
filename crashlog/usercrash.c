@@ -116,7 +116,9 @@ static int priv_process_usercrash_event(struct watch_entry *entry, struct inotif
             do_log_copy(eventname, dir, get_current_time_short(1), APLOG_TYPE);
             break;
         case HPROF_TYPE:
-            remove(path);
+            if (remove(path) == -1) {
+                LOGE("Failed to remove path %s\n", path);
+            }
             break;
         default:
             LOGE("%s: Unexpected type of event(%d)\n", __FUNCTION__, entry->eventtype);

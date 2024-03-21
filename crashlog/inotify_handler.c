@@ -445,7 +445,10 @@ int receive_inotify_events(int inotify_fd) {
                         entry = &wd_array[idx];
                 }
                 if ( entry && entry->eventpath ) {
-                    mkdir(entry->eventpath, 0777); /* TO DO : restoring previous rights/owner/group ?*/
+                    if ( mkdir(entry->eventpath, 0777) == -1 ) { /* TO DO : restoring previous rights/owner/group ?*/
+                        LOGE("Can't mkdir %s.\n", entry->eventpath);
+                        return -1;
+                    }
                     inotify_rm_watch(inotify_fd, event->wd);
                     wd = inotify_add_watch(inotify_fd, entry->eventpath, entry->eventmask);
                     if ( wd < 0 ) {

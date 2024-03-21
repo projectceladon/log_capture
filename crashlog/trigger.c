@@ -316,13 +316,17 @@ int process_stat_event(struct watch_entry *entry, struct inotify_event *event) {
         snprintf(path, sizeof(path), "%s/%s", entry->eventpath, tmp_data_name);
         snprintf(destination, sizeof(destination), "%s/%s", dir, tmp_data_name);
         do_copy(path, destination, MAXFILESIZE);
-        remove(path);
+        if (remove(path) == -1) {
+            LOGE("Failed to remove path %s\n", path);
+        }
     }
     /*copy trigger file*/
     snprintf(path, sizeof(path),"%s/%s",entry->eventpath,event->name);
     snprintf(destination,sizeof(destination),"%s/%s", dir, event->name);
     do_copy(path, destination, MAXFILESIZE);
-    remove(path);
+    if (remove(path) == -1) {
+        LOGE("Failed to remove path %s\n", path);
+    }
     /*create type */
     snprintf(tmp,sizeof(tmp),"%s",event->name);
     p = strstr(tmp,"_trigger");
