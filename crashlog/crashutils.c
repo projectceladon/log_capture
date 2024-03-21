@@ -164,13 +164,13 @@ unsigned long long get_uptime(int refresh, int *error)
 // Find system last kmsg from dropbox
 static int find_system_last_kmsg(char source[], int source_length) {
     struct dirent *entry;
-    DIR *dir = opendir(DROPBOX_DIR);
     int file_exist = 0;
 
     if (source == NULL) {
         LOGE("source is NULL.\n");
         return file_exist;
     }
+    DIR *dir = opendir(DROPBOX_DIR);
     if (dir == NULL) {
         LOGE("No such directory: %s\n",DROPBOX_DIR);
         return file_exist;
@@ -808,13 +808,17 @@ int process_info_and_error(char *filename, char *name) {
         snprintf(path, sizeof(path),"%s/%s", filename,tmp_data_name);
         snprintf(destion,sizeof(destion),"%s/%s", dir, tmp_data_name);
         do_copy_tail(path, destion, 0);
-        remove(path);
+        if (remove(path) == -1) {
+            LOGE("Failed to remove path %s\n", path);
+        }
     }
     /*copy trigger file*/
     snprintf(path, sizeof(path),"%s/%s", filename,name);
     snprintf(destion,sizeof(destion),"%s/%s", dir,name);
     do_copy_tail(path, destion, 0);
-    remove(path);
+    if (remove(path) == -1) {
+        LOGE("Failed to remove path %s\n", path);
+    }
     /*create type */
     snprintf(tmp,sizeof(tmp),"%s",name);
     /*Set to upper case*/
