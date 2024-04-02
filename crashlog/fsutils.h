@@ -89,7 +89,7 @@ static inline int dir_exists(const char *dirpath) {
 
     dir = opendir(dirpath);
     if (dir != NULL) {
-        closedir(dirpath);
+        closedir(dir);
         return 1;
     }
     return 0;

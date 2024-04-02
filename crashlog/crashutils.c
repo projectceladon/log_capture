@@ -183,6 +183,7 @@ static int find_system_last_kmsg(char source[], int source_length) {
             }
         }
     }
+    closedir(dir);
     return file_exist;
 }
 
