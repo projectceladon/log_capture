@@ -46,9 +46,7 @@ start_link() {
 		i=$((i+1))
 		N=$($VENDOR_PRINTF "%0"$APLOG_BIT"d" $i)
 		echo "vendor.aplog: create aplog.$N"
-		for j in $(seq -f "%03g" 1 $i); do
-			touch -h -r "$LOGCAT_FILE_PATH$j" "$APLOG_FILE_PATH$j"
-		done
+		[ $i -eq $APLOG_LIMIT ] && exit 0
 		if [ -f $LOGCAT_FILE_PATH$N ]; then
 			if [ ! -h $APLOG_FILE_PATH$N ]; then
 				$LINK_TOOL -s $LOGCAT_FILE_PATH$N $APLOG_FILE_PATH$N
