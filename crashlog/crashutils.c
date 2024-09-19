@@ -169,6 +169,7 @@ static int find_system_last_kmsg(char source[], int source_length) {
 
     if (source == NULL) {
         LOGE("source is NULL.\n");
+        closedir(dir);
         return file_exist;
     }
     if (dir == NULL) {
