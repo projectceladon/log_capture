@@ -694,7 +694,7 @@ int do_monitor() {
         return -1;
     } else if( get_missing_watched_dir_nb() ) {
         /* One or several directories couldn't have been added to inotify watcher */
-        handle_missing_watched_dir(file_monitor_fd);
+        handle_missing_watched_dir();
     }
 
     /* Set the inotify event callbacks */
