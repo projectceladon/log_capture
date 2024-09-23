@@ -59,6 +59,9 @@ static int check_aplogs_tobackup(char *filename) {
             LOGE("%s: Cannot transform the property %s(which is %s) into an array... error is %d - %s\n",
                 __FUNCTION__, PROP_IPANIC_PATTERN, ipanic_chain, nbpatterns, strerror(-nbpatterns));
             /* allocated memory is freed in commachain_to_fixedarray */
+            if (patterns_array_32) {
+                free(patterns_array_32);
+            }
             return 0;
         }
         if (nbpatterns == 0) {
