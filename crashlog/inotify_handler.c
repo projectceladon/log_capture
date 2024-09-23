@@ -392,6 +392,12 @@ int receive_inotify_events(int inotify_fd) {
             }
             /* copy the last bytes received */
             memcpy(lastevent, buffer, len);
+            /* Ensure there is enough space in the buffer for missing_bytes */
+            if (len + missing_bytes > sizeof(lastevent)) {
+                LOGE("%s: Buffer overflow prevented. The lastevent buffer is too small to hold the additional data.\n",
+                    __FUNCTION__);
+                return -1;
+            }
             /* now, reads the full last event, including its name field */
             res = read(inotify_fd, &lastevent[len], missing_bytes);
             if ( res != missing_bytes ) {

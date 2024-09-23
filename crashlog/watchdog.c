@@ -118,7 +118,7 @@ static void crashlog_wd_handler(int signal,
 
 int enable_watchdog(unsigned int timeout) {
     struct sigaction sigact;
-    struct sigevent sevp;
+    struct sigevent sevp = {0};
     struct itimerspec;
 
     if (timeout == 0)
