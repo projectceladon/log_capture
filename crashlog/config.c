@@ -98,7 +98,7 @@ static void add_section(char *config, pconfig_handle  conf_handle) {
         conf_handle->current->next = newsect;
      }
     conf_handle->current = newsect;
-    newsect->name = malloc(strlen(config));
+    newsect->name = malloc(strlen(config) + 1);
     if(!newsect->name) {
         if(newsect) {
             free(newsect);
