@@ -103,7 +103,6 @@ static int read_file(const char *filename, unsigned int *pcurrent) {
             *pcurrent = 0;
             LOGI("read KO res=%d, current=%d - error is %s\n", res,
                     *pcurrent, strerror(errno));
-            res = 0;
         }
         /* Close file */
         res = close_file(filename, fd);
@@ -313,7 +312,7 @@ int find_oneofstrings_in_file(const char *filename, const char *keywords[], int 
 
     while((linesize = readline(fd, buffer)) > 0) {
         /* Remove the trailing '\n' if it's there */
-        if (buffer[linesize-1] == '\n') {
+        if (linesize > 0 && buffer[linesize-1] == '\n') {
             linesize--;
             buffer[linesize] = 0;
         }
@@ -382,7 +381,7 @@ int find_oneofstrings_in_file_with_keyword(char *filename, char **keywords, char
 int find_str_in_standard_file(char *filename, char *keyword, char *tail) {
     char buffer[MAXLINESIZE];
     int fd, linesize;
-    int taillen;
+    unsigned int taillen;
 
     if (keyword == NULL || filename == NULL)
         return -EINVAL;
@@ -395,7 +394,7 @@ int find_str_in_standard_file(char *filename, char *keyword, char *tail) {
 
     while((linesize = readline(fd, buffer)) > 0) {
         /* Remove the trailing '\n' if it's there */
-        if (buffer[linesize-1] == '\n') {
+        if (linesize > 0 && buffer[linesize-1] == '\n') {
             linesize--;
             buffer[linesize] = 0;
         }
@@ -432,15 +431,18 @@ int find_str_in_file(const char *filename, const char *keyword, const char *tail
     if (keyword == NULL || filename == NULL)
         return -EINVAL;
 
-    if (stat(filename, &info) < 0) {
-        LOGE("%s: can not open file: %s - error is %s.\n", __FUNCTION__, filename, strerror(errno) );
-        return -errno;
-    }
     fd1 = fopen(filename, "r");
     if(fd1 == NULL) {
         LOGE("%s : can not open file: %s - error is %s.\n", __FUNCTION__, filename, strerror(errno) );
         return -errno;
     }
+
+    if (stat(filename, &info) < 0) {
+        fclose(fd1);
+        LOGE("%s: can not open file: %s - error is %s.\n", __FUNCTION__, filename, strerror(errno) );
+        return -errno;
+    }
+
     while(!feof(fd1)){
         if (fgets(buffer, sizeof(buffer), fd1) != NULL){
             /* Check the keyword */
@@ -975,12 +977,13 @@ int do_copy_eof(const char *src, const char *des)
 
     if (src == NULL || des == NULL) return -EINVAL;
 
-    if (stat(src, &info) < 0) {
-        LOGE("%s: can not open file: %s\n", __FUNCTION__, src);
+    if ( ( fd1 = open(src, O_RDONLY) ) < 0 ) {
         return -errno;
     }
 
-    if ( ( fd1 = open(src, O_RDONLY) ) < 0 ) {
+    if (stat(src, &info) < 0) {
+        close(fd1);
+        LOGE("%s: can not open file: %s\n", __FUNCTION__, src);
         return -errno;
     }
 
@@ -1084,12 +1087,13 @@ int do_copy_utf16_to_utf8(const char *src, const char *des)
 
     if (src == NULL || des == NULL) return -1;
 
-    if (stat(src, &info) < 0) {
-        LOGE("%s: can not open file: %s\n", __FUNCTION__, src);
+    if ( ( fd1 = open(src, O_RDONLY) ) < 0 ) {
         return -1;
     }
 
-    if ( ( fd1 = open(src, O_RDONLY) ) < 0 ) {
+    if (stat(src, &info) < 0) {
+        close(fd1);
+        LOGE("%s: can not open file: %s\n", __FUNCTION__, src);
         return -1;
     }
 
@@ -1155,11 +1159,12 @@ int do_copy_tail(char *src, char *dest, int limit) {
 
     if (src == NULL || dest == NULL) return -EINVAL;
 
-    if (stat(src, &info) < 0) {
+    if ( ( fsrc = open(src, O_RDONLY) ) < 0 ) {
         return -errno;
     }
 
-    if ( ( fsrc = open(src, O_RDONLY) ) < 0 ) {
+    if (stat(src, &info) < 0) {
+        close(fsrc);
         return -errno;
     }
 
@@ -1192,11 +1197,12 @@ int do_copy(char *src, char *dest, int limit) {
 
     if (src == NULL || dest == NULL) return -EINVAL;
 
-    if (stat(src, &info) < 0) {
+    if ( ( fsrc = open(src, O_RDONLY) ) < 0 ) {
         return -errno;
     }
 
-    if ( ( fsrc = open(src, O_RDONLY) ) < 0 ) {
+    if (stat(src, &info) < 0) {
+        close(fsrc);
         return -errno;
     }
 

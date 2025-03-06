@@ -51,9 +51,10 @@ static void config_trim(char *s)
     /* start */
     size_t i=0,j;
     while(isspace(s[i])){
-        if (s[++i] == '\0')
+        if (s[++i] == '\0') {
             LOGE("%s: start: Character string is invalid!\n", __FUNCTION__);
             return;
+        }
     }
     if (i>0) {
         for( j=0; j < strlen(s);j++) {

@@ -47,8 +47,11 @@ static void backup_apcoredump(char *dir, char* name, char* path) {
     int status = do_copy_tail(path, des, 0);
     if (status < 0)
         LOGE("backup ap core dump status: %d.\n",status);
-    else
-        remove(path);
+    else {
+        if (remove(path) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+        }
+    }
 }
 
 static char * priv_filter_crashevent(int eventtype, char* path) {
@@ -116,7 +119,9 @@ static int priv_process_usercrash_event(struct watch_entry *entry, struct inotif
             do_log_copy(eventname, dir, get_current_time_short(1), APLOG_TYPE);
             break;
         case HPROF_TYPE:
-            remove(path);
+            if (remove(path) != 0) {
+                LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+            }
             break;
         default:
             LOGE("%s: Unexpected type of event(%d)\n", __FUNCTION__, entry->eventtype);
