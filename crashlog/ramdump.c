@@ -136,7 +136,10 @@ static int request_cold_reset()
 {
     LOGI("Requesting a platform reboot (cold reset)...\n");
 
-    run_command(CMD_REBOOT, 30);
+    int status = run_command(CMD_REBOOT, 30);
+    if (status != 0){
+        LOGE("%s status: %d.\n", __FUNCTION__, status);
+    }
 
     return 0;
 }

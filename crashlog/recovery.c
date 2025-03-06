@@ -42,7 +42,9 @@ int crashlog_check_recovery() {
         LOGE("%s: Cannot get a valid new crash directory...\n", __FUNCTION__);
         raise_event(key, CRASHEVENT, RECOVERY_ERROR, NULL, NULL);
         LOGE("%-8s%-22s%-20s%s\n", CRASHEVENT, key, get_current_time_long(0), RECOVERY_ERROR);
-        remove(RECOVERY_ERROR_TRIGGER);
+        if (remove(RECOVERY_ERROR_TRIGGER) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, RECOVERY_ERROR_TRIGGER);
+        }
         free(key);
         return -1;
     }
@@ -55,7 +57,9 @@ int crashlog_check_recovery() {
     do_last_kmsg_copy(dir);
     raise_event(key, CRASHEVENT, RECOVERY_ERROR, NULL, dir);
     LOGE("%-8s%-22s%-20s%s %s\n", CRASHEVENT, key, get_current_time_long(0), RECOVERY_ERROR, dir);
-    remove(RECOVERY_ERROR_TRIGGER);
+    if (remove(RECOVERY_ERROR_TRIGGER) != 0) {
+        LOGE("%s: can't delete the %s\n", __FUNCTION__, RECOVERY_ERROR_TRIGGER);
+    }
     free(key);
     free(dir);
 
