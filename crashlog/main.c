@@ -612,7 +612,7 @@ static void get_device_id(void) {
 
     LOGE("%s: Could not find DeviceId, set it to '%s'\n",
          __FUNCTION__, DEVICE_ID_UNKNOWN);
-    strncpy(guuid, DEVICE_ID_UNKNOWN, strlen(DEVICE_ID_UNKNOWN));
+    strlcpy(guuid, DEVICE_ID_UNKNOWN, strlen(DEVICE_ID_UNKNOWN));
 
   write:
     write_uuid(LOG_UUID, guuid);
