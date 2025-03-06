@@ -345,7 +345,9 @@ int crashlog_check_panic(char *reason, int test) {
         LOGE("%-8s%-22s%-20s%s\n", CRASHEVENT, key, get_current_time_long(0), crashtype);
         free(key);
         /* Remove temporary files */
-        remove(LOG_PANICTEMP);
+        if (remove(LOG_PANICTEMP) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, LOG_PANICTEMP);
+        }
         return -1;
     }
 }
@@ -470,7 +472,9 @@ int crashlog_check_ram_panic(char *reason, const char *extrastring) {
         LOGE("%-8s%-22s%-20s%s\n", CRASHEVENT, key, get_current_time_long(0), crashtype);
         free(key);
         /* Remove temporary file */
-        remove(LOG_PANICTEMP);
+        if (remove(LOG_PANICTEMP) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, LOG_PANICTEMP);
+        }
         return -1;
     }
 }
@@ -534,7 +538,9 @@ int crashlog_check_panic_header(char *reason) {
         LOGE("%-8s%-22s%-20s%s\n", CRASHEVENT, key, get_current_time_long(0), crashtype);
         free(key);
         /* Remove temporary file */
-        remove(LOG_PANICTEMP);
+        if (remove(LOG_PANICTEMP) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, LOG_PANICTEMP);
+        }
         return -1;
     }
 }
@@ -609,9 +615,15 @@ int crashlog_check_kdump(char *reason __attribute__((__unused__)), int test) {
         free(key);
         free(dir);
 
-        remove(KDUMP_START_FLAG);
-        remove(KDUMP_FILE_NAME);
-        remove(KDUMP_FINISH_FLAG);
+        if (remove(KDUMP_START_FLAG) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, KDUMP_START_FLAG);
+        }
+        if (remove(KDUMP_FILE_NAME) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, KDUMP_FILE_NAME);
+        }
+        if (remove(KDUMP_FINISH_FLAG) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, KDUMP_FINISH_FLAG);
+        }
     }
     return 0;
 }

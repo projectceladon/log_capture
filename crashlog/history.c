@@ -527,7 +527,9 @@ int update_history_on_cmd_delete(char *events) {
                 if (!strcmp(eventid, events_list[idx])) {
                     fseek(fd, -strlen(line), SEEK_CUR);
                     fwrite("DELETE", 1, 6, fd);
-                    fseek(fd, strlen(line)-6, SEEK_CUR);
+                    if(fseek(fd, strlen(line)-6, SEEK_CUR) != 0) {
+                        LOGE("%s: fseek fail...\n", __FUNCTION__);
+                    }
                     rmfr(crashdir);
                 }
         }

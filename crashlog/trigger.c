@@ -272,7 +272,9 @@ int process_log_event(char *rootdir, char *triggername, int mode) {
     /*delete trigger file if necessary */
     if (rootdir && triggername) {
         snprintf(path, sizeof(path),"%s/%s",rootdir, triggername);
-        remove(path);
+        if (remove(path) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+        }
     }
     return res;
 }
@@ -316,13 +318,17 @@ int process_stat_event(struct watch_entry *entry, struct inotify_event *event) {
         snprintf(path, sizeof(path), "%s/%s", entry->eventpath, tmp_data_name);
         snprintf(destination, sizeof(destination), "%s/%s", dir, tmp_data_name);
         do_copy(path, destination, MAXFILESIZE);
-        remove(path);
+        if (remove(path) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+        }
     }
     /*copy trigger file*/
     snprintf(path, sizeof(path),"%s/%s",entry->eventpath,event->name);
     snprintf(destination,sizeof(destination),"%s/%s", dir, event->name);
     do_copy(path, destination, MAXFILESIZE);
-    remove(path);
+    if (remove(path) != 0) {
+        LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+    }
     /*create type */
     snprintf(tmp,sizeof(tmp),"%s",event->name);
     p = strstr(tmp,"_trigger");

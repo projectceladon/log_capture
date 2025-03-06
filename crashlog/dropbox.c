@@ -209,9 +209,6 @@ long extract_dropbox_timestamp(char* filename)
                     if (!isdigit(timestamp[size_timestamp]))
                         return -1;
                 }
-                //checks timestamp value compatibility with 'long' type
-                if ( atoll(timestamp) > LONG_MAX )
-                    return -1;
                 return atol(timestamp);
             }
         }

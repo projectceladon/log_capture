@@ -184,6 +184,7 @@ static int find_system_last_kmsg(char source[], int source_length) {
             }
         }
     }
+    closedir(dir);
     return file_exist;
 }
 
@@ -813,13 +814,17 @@ int process_info_and_error(char *filename, char *name) {
         snprintf(path, sizeof(path),"%s/%s", filename,tmp_data_name);
         snprintf(destion,sizeof(destion),"%s/%s", dir, tmp_data_name);
         do_copy_tail(path, destion, 0);
-        remove(path);
+        if (remove(path) != 0) {
+            LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+        }
     }
     /*copy trigger file*/
     snprintf(path, sizeof(path),"%s/%s", filename,name);
     snprintf(destion,sizeof(destion),"%s/%s", dir,name);
     do_copy_tail(path, destion, 0);
-    remove(path);
+    if (remove(path) != 0) {
+        LOGE("%s: can't delete the %s\n", __FUNCTION__, path);
+    }
     /*create type */
     snprintf(tmp,sizeof(tmp),"%s",name);
     /*Set to upper case*/
@@ -1157,12 +1162,14 @@ int do_screenshot_copy(char* bz_description, char* bzdir) {
     int bz_num = 0;
     int screenshot_len;
 
-    if (stat(bz_description, &info) < 0)
-        return -1;
-
     fd1 = fopen(bz_description,"r");
     if(fd1 == NULL){
         LOGE("%s: can not open file: %s\n", __FUNCTION__, bz_description);
+        return -1;
+    }
+
+    if (stat(bz_description, &info) < 0) {
+        fclose(fd1);
         return -1;
     }
 
